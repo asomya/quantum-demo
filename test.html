@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/ui-lightness/jquery-ui.css"/>
+        <script type="text/javascript" src="draw.js"></script>
+    </head>
+
+    <body>
+    <script type="text/javascript">
+    function addNetwork() {
+        s.addShape(new Shape(sx,sy,80,40,'black','network','Net '+netn));
+        netn++;            
+        sy = sy + 50;
+    }
+
+    function addNode() {            
+        s.addShape(new Shape(tx,ty,60,20,'lightskyblue','node','Node '+nodn));            
+        nodn++;
+        ty = ty + 30; 
+    }
+    $(document).ready(function() {
+        s = new CanvasState(document.getElementById('box'));
+
+        netn = 1;
+        sx = 40;
+        sy = 40;
+
+        nodn = 1;
+        tx = 200;
+        ty = 40;
+    });
+    </script>
+    <div style="height:50px; position:fixed">
+        <button onClick="addNetwork()">Add Network</button>
+        <button onClick="addNode()">Add Node</button>
+    </div>
+    <canvas id="box" width="640" height="480" style="border:1px solid black">Your browser does not support HTML5</canvas>
+    </body>
+</html>
