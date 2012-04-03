@@ -1,0 +1,17 @@
+canvas {
+    background: -moz-linear-gradient(top, rgba(226,226,226,1) 0%, rgba(219,219,219,1) 50%, rgba(209,209,209,1) 51%, rgba(254,254,254,1) 100%);
+    -moz-border-radius: 5px;
+}
+body {
+    background: -moz-linear-gradient(top, rgba(149,149,149,1) 0%, rgba(13,13,13,1) 46%, rgba(1,1,1,1) 50%, rgba(10,10,10,1) 53%, rgba(78,78,78,1) 76%, rgba(56,56,56,1) 87%, rgba(27,27,27,1) 100%); /* FF3.6+ */
+}
+
+div.nav {
+    width:20%;
+    height:auto;
+    float:left;
+    background: -moz-linear-gradient(top, #b5bdc8 0%, #828c95 36%, #28343b 100%);
+    padding: 5px;
+    margin-right: 10px;
+    -moz-border-radius: 5px;
+}

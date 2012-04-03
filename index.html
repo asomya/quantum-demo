@@ -3,22 +3,32 @@
         <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+        <script src="http://www.html5canvastutorials.com/libraries/kinetic-v3.9.1.js"></script>
         <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/themes/ui-lightness/jquery-ui.css"/>
+        <link rel="stylesheet" type="text/css" href="style.css"/>
         <script type="text/javascript" src="draw.js"></script>
     </head>
 
     <body>
     <script type="text/javascript">
     function addNetwork() {
-        s.addShape(new Shape(sx,sy,80,40,'black','network','Net '+netn));
-        netn++;            
-        sy = sy + 50;
+        //s.addShape(new Shape(sx,sy,128,128,'network','Net '+netn,'modem.png'));
+        s.addImage(new Pict('two_arrow_switch.png', sx, sy, 48, 48,'network','Net '+netn))
+        netn++;
+        sy = sy + 60;
+        if (sy > 530) {
+            sy = 40;
+        }
     }
 
     function addNode() {            
-        s.addShape(new Shape(tx,ty,60,20,'lightskyblue','node','Node '+nodn));            
+        //s.addShape(new Shape(tx,ty,64,64,'node','Node '+nodn,'server_small.png'));
+        s.addImage(new Pict('server_small.png', tx, ty, 64, 64,'node','Node '+nodn));
         nodn++;
-        ty = ty + 30; 
+        ty = ty + 70;
+        if (ty > 530) {
+            ty = 40;
+        }
     }
     $(document).ready(function() {
         s = new CanvasState(document.getElementById('box'));
@@ -32,10 +42,25 @@
         ty = 40;
     });
     </script>
-    <div style="height:50px; position:fixed">
+    <div class="nav">
+        <table class="legend">
+            <th colspan="2">
+                Legend
+            </th>
+            <tr>
+                <td><img src="two_arrow_switch.png"/></td>
+                <td>Network</td>
+            </tr>
+            <tr>
+                <td><img src="server_small.png"/></td>
+                <td>Node</td>
+            </tr>
+        </table>
         <button onClick="addNetwork()">Add Network</button>
         <button onClick="addNode()">Add Node</button>
     </div>
-    <canvas id="box" width="640" height="480" style="border:1px solid black">Your browser does not support HTML5</canvas>
+    <div style="width:79%">
+    <canvas id="box" width="800" height="600" style="border:1px solid black">Your browser does not support HTML5</canvas>
+    </div>
     </body>
 </html>

@@ -32,10 +32,22 @@ Shape.prototype.contains = function(mx, my) {
           (this.y <= my) && (this.y + this.h >= my);
 }
 
-function Image(img, dx, dy) {
-    this.src = img;
+Pict.prototype.contains = function(mx, my) {
+  // All we have to do is make sure the Mouse X,Y fall in the area between
+  // the shape's X and (X + Height) and its Y and (Y + Height)
+  return  (this.x <= mx) && (this.x + this.w >= mx) &&
+          (this.y <= my) && (this.y + this.h >= my);
+}
+
+function Pict(img, dx, dy, w, h, type, text) {
+    this.img = new Image();
+    this.img.src = img;
     this.x = dx;
     this.y = dy;
+    this.w = w;
+    this.h = h;
+    this.type = type;
+    this.text = text;
 }
 
 function Line(start, end) {
@@ -94,11 +106,11 @@ function CanvasState(canvas) {
     var mouse = myState.getMouse(e);
     var mx = mouse.x;
     var my = mouse.y;
-    var shapes = myState.shapes;
-    var l = shapes.length;
+    var images = myState.images;
+    var l = images.length;
     for (var i = l-1; i >= 0; i--) {
-      if (shapes[i].contains(mx, my)) {
-        var mySel = shapes[i];
+      if (images[i].contains(mx, my)) {
+        var mySel = images[i];
         // Keep track of where in the object we clicked
         // so we can move it smoothly (see mousemove)
         myState.dragoffx = mx - mySel.x;
@@ -134,11 +146,11 @@ function CanvasState(canvas) {
     var mouse = myState.getMouse(e);
     var mx = mouse.x;
     var my = mouse.y;
-    var shapes = myState.shapes;
-    var l = shapes.length;
+    var images = myState.images;
+    var l = images.length;
     for (var i = l-1; i >= 0; i--) {
-        if (shapes[i].contains(mx, my)) {
-            var mySel = shapes[i];
+        if (images[i].contains(mx, my)) {
+            var mySel = images[i];
             if (myState.dblclick != null) {
                 if (myState.dblclick != mySel) {
                     // One has to be a node and another a network
@@ -162,19 +174,29 @@ function CanvasState(canvas) {
                     }
                     // Check if the selections are already connected
                     var lines = myState.lines;
-                    var connected = 0;
+                    var connected = null;
                     for (var ln=0; ln < lines.length; ln++) {
                         if (lines[ln].start == myState.dblclick &&
                             lines[ln].end == mySel) {
-                            connected++;
+                            connected = lines[ln];
                         }
                         if (lines[ln].start == mySel &&
                             lines[ln].end == myState.dblclick) {
-                            connected++;
+                            connected = lines[ln];
                         }
                     }
-                    if (connected == 1) {
-                        console.log('Already connected');
+                    if (connected) {
+                        // Remove connection
+                        var newlines = new Array();
+                        for (var ln=0; ln < lines.length; ln++) {
+                            if (lines[ln] != connected) {
+                                newlines.push(lines[ln]);
+                            }
+                        }
+                        myState.lines = newlines;
+                        lines = newlines;
+                        myState.valid = false;
+                        myState.draw();
                         myState.dblclick = null;
                         return;
                     }
@@ -196,7 +218,7 @@ function CanvasState(canvas) {
                     }
                     myState.lines = newlines;
                     // Draw line between elements
-                    myState.addLine(new Line(myState.dblclick, shapes[i]));
+                    myState.addLine(new Line(myState.dblclick, images[i]));
                     // Clear selection
                     myState.dblclick = null;
                     return;
@@ -263,6 +285,16 @@ CanvasState.prototype.draw = function() {
       shapes[i].draw(ctx);
     }
     
+    // Draw all images
+    var im = this.images.length;
+    for (var i=0; i < im; i++) {
+        var image = this.images[i];
+        ctx.drawImage(image.img, image.x, image.y, image.w, image.h);
+        ctx.font = "12px helvetica";
+        ctx.fillStyle = 'black';
+        ctx.fillText(image.text, image.x, image.y);
+    }
+
     // draw selection
     // right now this is just a stroke along the edge of the selected Shape
     if (this.selection != null) {
@@ -299,19 +331,16 @@ CanvasState.prototype.draw = function() {
             start_y = line.start.y + (line.start.h/2);
             end_x = line.end.x + line.end.w;
             end_y = line.end.y + (line.end.h/2);
-            // Calculate control points between lines
-            cp_x = (start_x - end_x)/2;
-            cp_y = (end_y - start_y)/2;
+            cp_x = start_x + ((start_x - end_x)/2);
         } else {
             // Right edge of start and left edge of end
             start_y = line.start.y + (line.start.h/2);
             start_x = line.start.x + line.start.w;
             end_y = line.end.y + (line.end.h/2);
-            // Calculate control points between lines
-            cp_x = (end_x - start_x)/2;
-            cp_y = (end_y - start_y)/2;
+            cp_x = end_x + ((end_x - start_x)/2);
         }
-
+        // Calculate control points between lines
+        cp_y = (end_y + start_y)/2;
         ctx.beginPath();
         ctx.moveTo(start_x, start_y);
         ctx.lineTo(end_x, end_y);
@@ -319,6 +348,7 @@ CanvasState.prototype.draw = function() {
         //ctx.quadraticCurveTo(cp_x, cp_y, end_x, end_y);
         ctx.lineWidth = 3;
         ctx.strokeStyle = "red"; // line color
+        ctx.lineCap = "round";
         ctx.stroke();
     }
 
